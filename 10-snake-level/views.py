@@ -71,21 +71,24 @@ class GameView(View):
             surface, (pos[0]*self.BLOCK_SIZE[0], pos[1]*self.BLOCK_SIZE[1]))
 
     def on_draw(self):
-        text = self.font.render('level:%d score: %s' % (
-            self.level, self.score), True, (0xff, 0, 0xff))
-        self.context.screen.blit(
-            text, (self.context.screen.get_size()[0] - text.get_size()[0] - 2, 0))
         self.on_move()
         self.snake.on_draw(self)
         self.draw_surface(self._food, self.food)
         for block in self._block:
             self.draw_surface(block, self.block)
-
+        self._draw_text()
+        
     def on_event(self, event):
         if event.type == KEYDOWN:
             self.snake.on_event(event)
 
+    def _draw_text(self):
+        text = self.font.render('level:%d score: %s' % (
+            self.level, self.score), True, (0xff, 0, 0xff))
+        self.context.screen.blit(text, (self.context.screen.get_size()[
+                                 0] - text.get_size()[0] - 2, 0))
     # 蛇移动事件处理
+
     def on_move(self):
         if self.snake.has_eat(self._food):
             self.snake.plus()
@@ -103,7 +106,7 @@ class GameView(View):
                 self.eat_count = 0
                 # 重新生成地图
                 self._block = [self._get_random_block()
-                       for i in range(random.randrange(3, 6))]
+                               for i in range(random.randrange(3, 6))]
         # 如果碰撞，切换到游戏结束页面
         if self.snake.has_hit(self._block):
             self.context.view = GameOverView(self.context)
